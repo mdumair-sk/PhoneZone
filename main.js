@@ -25,13 +25,15 @@ function createWindow() {
     height: 800,
     minWidth: 1024,
     minHeight: 680,
-    frame: true,
+    frame: false,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, 'preload.js'),
     },
   });
+
+  win.removeMenu();
 
   if (isDev) {
     win.loadURL('http://localhost:5173');
@@ -170,7 +172,30 @@ ipcMain.handle('db:backup', async (_event, savePath) => {
   }
 });
 
-// ── App lifecycle ─────────────────────────────────────────────────────────────
+// ── Window Controls ─────────────────────────────────────────────────────────────
+
+ipcMain.on('win:minimize', (event) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  if (win) win.minimize();
+});
+
+ipcMain.on('win:maximize', (event) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  if (win) {
+    if (win.isMaximized()) win.restore();
+    else win.maximize();
+  }
+});
+
+ipcMain.on('win:close', (event) => {
+  const webContents = event.sender;
+  const win = BrowserWindow.fromWebContents(webContents);
+  if (win) win.close();
+});
+
+// ── App Events ────────────────────────────────────────────────────────────────
 
 // Add License IPCs
 ipcMain.handle('license:getFingerprint', () => getMachineFingerprint());

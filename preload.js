@@ -32,4 +32,9 @@ contextBridge.exposeInMainWorld('api', {
      */
     backup: (savePath) => ipcRenderer.invoke('db:backup', savePath),
   },
+  window: {
+    minimize: () => ipcRenderer.send('win:minimize'),
+    maximize: () => ipcRenderer.send('win:maximize'),
+    close: () => ipcRenderer.send('win:close'),
+  },
 });

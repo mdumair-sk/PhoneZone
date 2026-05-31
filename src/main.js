@@ -486,13 +486,26 @@ function injectGlobalStyles() {
 
 function buildShell() {
   document.body.innerHTML = `
-    <div id="shell" style="
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      background: var(--color-bg);
-      color: var(--color-text);
-    ">
+    <div id="app-container" style="display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: var(--color-bg); color: var(--color-text);">
+      <!-- Title Bar -->
+      <div style="height: 32px; background: var(--color-surface); border-bottom: 1px solid var(--color-border); display: flex; justify-content: flex-end; align-items: stretch; -webkit-app-region: drag; flex-shrink: 0; z-index: 100000;">
+        <div style="display: flex; -webkit-app-region: no-drag;">
+          <button onclick="window.api.window.minimize()" style="width: 46px; background: transparent; border: none; color: var(--color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: background 0.2s, opacity 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.opacity='1'" onmouseout="this.style.background='transparent'; this.style.opacity='0.6'">
+            <svg width="12" height="12" viewBox="0 0 12 12"><rect fill="currentColor" width="10" height="1" x="1" y="5.5"></rect></svg>
+          </button>
+          <button onclick="window.api.window.maximize()" style="width: 46px; background: transparent; border: none; color: var(--color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: background 0.2s, opacity 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'; this.style.opacity='1'" onmouseout="this.style.background='transparent'; this.style.opacity='0.6'">
+            <svg width="12" height="12" viewBox="0 0 12 12"><rect fill="none" stroke="currentColor" width="9" height="9" x="1.5" y="1.5"></rect></svg>
+          </button>
+          <button onclick="window.api.window.close()" style="width: 46px; background: transparent; border: none; color: var(--color-text); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: background 0.2s, color 0.2s, opacity 0.2s;" onmouseover="this.style.background='#e81123'; this.style.color='#fff'; this.style.opacity='1'" onmouseout="this.style.background='transparent'; this.style.color='var(--color-text)'; this.style.opacity='0.6'">
+            <svg width="12" height="12" viewBox="0 0 12 12"><polygon fill="currentColor" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"></polygon></svg>
+          </button>
+        </div>
+      </div>
+      <div id="shell" style="
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      ">
       <!-- Sidenav -->
       <aside style="
         width: 250px; min-width: 250px;
@@ -555,6 +568,7 @@ function buildShell() {
 
       <!-- Content -->
       <main id="content" style="flex: 1; overflow-y: auto; overflow-x: hidden;"></main>
+    </div>
     </div>
   `;
 }
