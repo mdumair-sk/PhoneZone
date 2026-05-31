@@ -34,7 +34,12 @@ export async function renderExpenses(container) {
       
       <!-- Left: Add Expense Form -->
       <div style="flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px;">
-        <h1 style="margin: 0; font-size: 24px; color: var(--color-primary); letter-spacing: 0.02em;">Expenses</h1>
+        <div style="margin-bottom: 16px;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Expenses</h1>
+          <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+            OPERATIONAL COSTS · MONTHLY TRACKER
+          </div>
+        </div>
         
         <div class="fh-card">
           <div class="fh-card-title">💸 Log New Expense</div>

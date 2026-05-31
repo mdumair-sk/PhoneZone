@@ -107,7 +107,7 @@ window.applyTheme = async function applyTheme(themeId) {
       @import url('https://fonts.googleapis.com/css2?family=${fBody}:wght@400;500;600;700&family=${fMono}:wght@400;500;600&family=${fHead}:wght@600;700;800&display=swap');
       body, html, .fh-input, .fh-btn, .fh-label { font-family: '${body}', sans-serif; }
       .mono, .fh-input[type="number"], .tabular-nums { font-family: '${mono}', monospace; }
-      h1, h2, h3, .fh-card-title { font-family: '${heading}', sans-serif; }
+      h1, h2, h3, .fh-card-title, .theme-heading-font { font-family: '${heading}', sans-serif; }
     `;
   }
 
@@ -440,7 +440,6 @@ function injectGlobalStyles() {
     }
 
     .fh-card-title {
-      font-family: 'Syne', sans-serif;
       font-size: 11px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -495,15 +494,15 @@ function buildShell() {
       ">
         <!-- Logo -->
         <div style="padding: 24px 20px 20px; flex-shrink: 0;">
-          <div id="nav-shop-name" style="font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+          <div id="nav-shop-name" class="theme-heading-font" style="font-size: 22px; font-weight: 800;
             color: var(--color-primary); letter-spacing: 0.02em; line-height: 1.15;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
             overflow: hidden; text-overflow: ellipsis; word-break: break-word; max-width: 210px; transition: font-size 0.2s;">
             FoneHisab
           </div>
-          <div id="nav-shop-sub" style="
-            font-size: 10px; letter-spacing: 0.2em;
-            opacity: 0.3; margin-top: 3px; text-transform: uppercase;
+          <div id="nav-shop-sub" class="theme-heading-font" style="
+            font-size: 10px; letter-spacing: 0.2em; font-weight: 700;
+            opacity: 0.5; margin-top: 3px; text-transform: uppercase;
           ">Shop Manager</div>
         </div>
 
@@ -615,8 +614,7 @@ function showLockScreen(storedHash) {
         text-align: center;
       ">
         <div style="font-size: 36px; margin-bottom: 16px;">🔐</div>
-        <div style="
-          font-family: 'Syne', sans-serif;
+        <div class="theme-heading-font" style="
           font-size: 20px; font-weight: 700;
           letter-spacing: 0.04em;
           color: var(--color-primary);
@@ -727,7 +725,7 @@ function showLockScreen(storedHash) {
   // 3. Load settings + apply theme before painting
   const settings = await window.getSettings();
   const theme    = settings.app_theme || 'dark';
-  document.documentElement.setAttribute('data-theme', theme);
+  await window.applyTheme(theme);
 
   // 4. Build shell (sets up DOM)
   buildShell();

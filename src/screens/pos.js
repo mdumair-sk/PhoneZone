@@ -245,8 +245,16 @@ export async function renderPOS(container) {
         border-right:1px solid var(--color-border);overflow:hidden;
       ">
 
+        <!-- Header -->
+        <div style="padding: 24px 24px 0 24px; flex-shrink: 0;">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Billing</h1>
+          <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+            POINT OF SALE · CHECKOUT
+          </div>
+        </div>
+
         <!-- Search bar -->
-        <div style="padding:20px 20px 0;flex-shrink:0;">
+        <div style="padding:24px 24px 0;flex-shrink:0;">
           <div style="position:relative;">
             <input id="pos-search" class="fh-input" type="search"
               placeholder="🔍  Search items by name…"

@@ -56,9 +56,14 @@ function generateBarChartSVG(data, width = 300, height = 100) {
 export async function renderDashboard(container) {
   container.innerHTML = `
     <div style="padding: 24px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 style="margin: 0; font-size: 24px; color: var(--color-primary); letter-spacing: 0.02em;">Overview</h1>
-        <div style="display: flex; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Overview</h1>
+          <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+            DAILY METRICS · ALERTS · TRENDS
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; margin-bottom: 2px;">
           <button class="fh-btn fh-btn-ghost" onclick="window.__showScreen('inventory')">📦 Add Stock</button>
           <button class="fh-btn fh-btn-primary" onclick="window.__showScreen('pos')">➕ New Sale</button>
         </div>

@@ -431,11 +431,9 @@ export async function renderReports(container) {
 
       <!-- Header -->
       <div style="margin-bottom:28px;">
-        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:0.02em;">
-          Reports &amp; Exports
-        </div>
-        <div style="font-size:11px;opacity:0.35;margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">
-          Financial data · GSTR-1 · Backup
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Reports & Exports</h1>
+        <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+          FINANCIAL DATA · GSTR-1 · BACKUP
         </div>
       </div>
 

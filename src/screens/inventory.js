@@ -975,11 +975,9 @@ export async function renderInventory(container) {
 
       <!-- Header -->
       <div style="margin-bottom:24px;">
-        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:0.02em;">
-          Inventory
-        </div>
-        <div style="font-size:11px;opacity:0.35;margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">
-          Items · Purchases · Returns
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Inventory</h1>
+        <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+          ITEMS · PURCHASES · RETURNS
         </div>
       </div>
 

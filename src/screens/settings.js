@@ -648,11 +648,9 @@ export async function renderSettings(container) {
   container.innerHTML = `
     <div style="padding:32px;max-width:720px;margin:0 auto;">
       <div style="margin-bottom:28px;">
-        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;letter-spacing:0.02em;">
-          Settings
-        </div>
-        <div style="font-size:11px;opacity:0.35;margin-top:4px;letter-spacing:0.1em;text-transform:uppercase;">
-          App configuration & data management
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Settings</h1>
+        <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+          APP CONFIGURATION & DATA MANAGEMENT
         </div>
       </div>
       <div id="settings-body">

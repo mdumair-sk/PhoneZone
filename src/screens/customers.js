@@ -25,9 +25,14 @@ function openModal(html) {
 export async function renderCustomers(container) {
   container.innerHTML = `
     <div style="padding: 24px; max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; height: 100%;">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
-        <h1 style="margin: 0; font-size: 24px; color: var(--color-primary); letter-spacing: 0.02em;">Customer Ledger</h1>
-        <div style="position: relative; width: 300px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;">
+        <div>
+          <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: var(--color-text); letter-spacing: -0.02em;">Customer Ledger</h1>
+          <div style="font-size: 11px; font-weight: 600; color: var(--color-primary); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 6px; opacity: 0.8;">
+            DIRECTORY · CREDIT BALANCE · HISTORY
+          </div>
+        </div>
+        <div style="position: relative; width: 300px; margin-bottom: 2px;">
           <input type="text" id="cust-search" class="fh-input" placeholder="🔍 Search customers..." style="width: 100%;" />
         </div>
       </div>
