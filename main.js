@@ -34,6 +34,7 @@ function createWindow() {
     },
   });
 
+  win.maximize();
   win.removeMenu();
 
   if (isDev) {

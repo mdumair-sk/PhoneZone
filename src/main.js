@@ -724,10 +724,12 @@ function showLockScreen(storedHash) {
 
     // Migration: Add amount_paid if missing
     try {
-      await window.api.db.run(`ALTER TABLE sales ADD COLUMN amount_paid REAL DEFAULT 0.0`);
-      // Backfill amount_paid
-      await window.api.db.run(`UPDATE sales SET amount_paid = grand_total WHERE payment_mode != 'Credit'`);
-      await window.api.db.run(`UPDATE sales SET amount_paid = 0.0 WHERE payment_mode = 'Credit'`);
+      const alterRes = await window.api.db.run(`ALTER TABLE sales ADD COLUMN amount_paid REAL DEFAULT 0.0`);
+      if (alterRes && alterRes.ok) {
+        // Backfill amount_paid only if the column was newly added
+        await window.api.db.run(`UPDATE sales SET amount_paid = grand_total WHERE payment_mode != 'Credit'`);
+        await window.api.db.run(`UPDATE sales SET amount_paid = 0.0 WHERE payment_mode = 'Credit'`);
+      }
     } catch (e) {
       // Ignored if column already exists
     }
