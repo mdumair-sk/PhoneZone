@@ -39,7 +39,7 @@ window.THEMES = {
   },
   light: {
     label: '☀️ Light',
-    fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Inter' },
+    fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Playfair Display' },
     vars: { bg: '#FAFAFA', surface: '#FFFFFF', border: '#E2E8F0', text: '#0F172A', primary: '#2563EB' }
   },
   cyberpunk: {
