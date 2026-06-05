@@ -10,7 +10,6 @@ dist-electron/
 dist-installer/
 release/
 out/
-build/
 
 # Vite Cache
 .vite/
