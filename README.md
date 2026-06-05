@@ -1,13 +1,14 @@
-# FoneHisab — Offline Desktop POS
+# Phone Zone — Offline Desktop POS
 
 A premium, production-grade offline Point-of-Sale and inventory manager specifically designed for mobile phone retail shops. Built with **Electron + Vite + Vanilla CSS (Custom Design System) + better-sqlite3**.
 
-![FoneHisab Interface](https://via.placeholder.com/1000x600.png?text=FoneHisab+POS)
+![Phone Zone Interface](https://via.placeholder.com/1000x600.png?text=Phone+Zone+POS)
 
 ---
 
 ## Key Features
 
+- **Immersive Fullscreen UI**: Automatically opens in a maximized window on launch.
 - **Dynamic Dashboard**: Real-time sales metrics, weekly revenue charts (SVG), low stock alerts, and quick actions.
 - **Advanced POS System**:
   - Lightning-fast barcode scanner support (via keyboard input buffering).
@@ -65,7 +66,7 @@ The app opens automatically. Hot-reload works for renderer changes. Electron mai
 npm run dist
 ```
 
-Output: `dist-installer/FoneHisab Setup x.x.x.exe`
+Output: `dist-installer/Phone Zone Setup x.x.x.exe`
 
 > **Before building**, replace `assets/icon.ico` with a real
 > **256 × 256 pixel `.ico` file** (multi-resolution recommended: 16/32/48/256 px).
@@ -75,9 +76,9 @@ Output: `dist-installer/FoneHisab Setup x.x.x.exe`
 
 ## Database Location
 
-SQLite database file: `%APPDATA%\FoneHisab\shop.db`
+SQLite database file: `%APPDATA%\phone-zone\shop.db`
 
-Full path example: `C:\Users\<YourName>\AppData\Roaming\FoneHisab\shop.db`
+Full path example: `C:\Users\<YourName>\AppData\Roaming\phone-zone\shop.db`
 
 To open it manually: use [DB Browser for SQLite](https://sqlitebrowser.org/).
 
@@ -107,7 +108,7 @@ Margin scheme applies **only** to Used Phones and must be toggled per line item.
 ## Architecture Overview
 
 ```text
-fonehisab/
+phone-zone/
 ├── main.js               # Electron main process (IPC, Hardware Fingerprint, Window)
 ├── preload.js            # Context bridge (window.api.db)
 ├── vite.config.js
