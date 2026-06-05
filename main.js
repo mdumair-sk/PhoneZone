@@ -26,6 +26,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 680,
     frame: false,
+    icon: path.join(__dirname, 'assets/icon.ico'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -97,6 +98,7 @@ function createLockWindow(reason) {
     height: 520,
     frame: false,
     resizable: false,
+    icon: path.join(__dirname, 'assets/icon.ico'),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

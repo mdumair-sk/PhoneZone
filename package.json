@@ -2,6 +2,7 @@
   "name": "fonehisab",
   "version": "1.0.0",
   "description": "Offline desktop POS for mobile phone retail shops",
+  "author": "umair",
   "main": "main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
@@ -19,10 +20,10 @@
     "@fontsource/share-tech-mono": "^5.2.7",
     "@fontsource/syne": "^5.2.7",
     "better-sqlite3": "^12.10.0",
-    "electron": "^29.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "electron": "^29.1.0",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
     "electron-builder": "^24.13.3",
@@ -47,6 +48,7 @@
     ],
     "extraResources": [],
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -55,13 +57,11 @@
           ]
         }
       ],
-      "icon": "assets/icon.ico"
+      "publisherName": "umair"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "assets/icon.ico",
-      "uninstallerIcon": "assets/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     }
