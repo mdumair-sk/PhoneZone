@@ -21,6 +21,7 @@ function openModal(html, maxWidth = '600px') {
   backdrop.innerHTML = `<div class="fh-modal" style="max-width:${maxWidth};width:94%;">${html}</div>`;
   document.body.appendChild(backdrop);
   backdrop.addEventListener('click', e => { if (e.target === backdrop) backdrop.remove(); });
+  window.setupCustomSelects(backdrop);
   return backdrop;
 }
 
@@ -76,7 +77,7 @@ async function fetchAndRenderCustomers(container, searchQuery = '') {
   try {
     let sql = `
       SELECT c.*, 
-        COALESCE((SELECT SUM(grand_total - amount_paid) FROM sales s WHERE s.customer_name = c.name AND s.grand_total > s.amount_paid AND s.status = 'Active'), 0) as credit_balance
+        COALESCE((SELECT SUM(grand_total - COALESCE(amount_paid, 0)) FROM sales s WHERE s.customer_name = c.name AND s.grand_total > COALESCE(s.amount_paid, 0) AND s.status = 'Active'), 0) as credit_balance
       FROM customers c
     `;
     let params = [];
@@ -101,7 +102,7 @@ async function fetchAndRenderCustomers(container, searchQuery = '') {
         <td style="padding: 14px 20px; font-weight: 600;">${esc(c.name)}</td>
         <td style="padding: 14px 20px; font-variant-numeric: tabular-nums; opacity: 0.8;">${esc(c.phone) || '-'}</td>
         <td style="padding: 14px 20px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600;">₹${fmt(c.total_purchases)}</td>
-        <td style="padding: 14px 20px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: ${c.credit_balance > 0 ? '#FF8C00' : 'inherit'};">
+        <td style="padding: 14px 20px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: ${c.credit_balance > 0 ? 'var(--color-warning)' : 'inherit'};">
           ₹${fmt(c.credit_balance)}
         </td>
       </tr>
@@ -112,14 +113,14 @@ async function fetchAndRenderCustomers(container, searchQuery = '') {
     });
 
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: #FF4444;">Error: ${esc(err.message)}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 40px; color: var(--color-danger);">Error: ${esc(err.message)}</td></tr>`;
   }
 }
 
 async function showCustomerDetails(customerName) {
   try {
     const res = await window.api.db.query(
-      `SELECT id, invoice_number, sale_date, grand_total, amount_paid, payment_mode, status 
+      `SELECT id, invoice_number, sale_date, grand_total, COALESCE(amount_paid, 0) AS amount_paid, payment_mode, status 
        FROM sales 
        WHERE customer_name = ? 
        ORDER BY sale_date DESC`,
@@ -151,9 +152,9 @@ async function showCustomerDetails(customerName) {
             <tbody>
               ${invoices.map(inv => {
                 let statusBadge = '';
-                if (inv.status === 'Active') statusBadge = '<span style="color:#00FFB2;">Active</span>';
-                if (inv.status === 'Voided') statusBadge = '<span style="color:#FF4444;">Voided</span>';
-                if (inv.status === 'Refunded') statusBadge = '<span style="color:#FF8C00;">Refunded</span>';
+                if (inv.status === 'Active') statusBadge = '<span style="color:var(--color-success);">Active</span>';
+                if (inv.status === 'Voided') statusBadge = '<span style="color:var(--color-danger);">Voided</span>';
+                if (inv.status === 'Refunded') statusBadge = '<span style="color:var(--color-warning);">Refunded</span>';
                 
                 const due = inv.grand_total - inv.amount_paid;
                 
@@ -166,8 +167,8 @@ async function showCustomerDetails(customerName) {
                     <td style="padding: 10px; font-variant-numeric: tabular-nums;">${inv.sale_date.split(' ')[0]}</td>
                     <td style="padding: 10px; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace;">${esc(inv.invoice_number)}</td>
                     <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600;">₹${fmt(inv.grand_total)}</td>
-                    <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums; color: #00FFB2;">₹${fmt(inv.amount_paid)}</td>
-                    <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums; color: ${due > 0 ? '#FF8C00' : 'inherit'};">₹${fmt(due)}</td>
+                    <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums; color: var(--color-success);">₹${fmt(inv.amount_paid)}</td>
+                    <td style="padding: 10px; text-align: right; font-variant-numeric: tabular-nums; color: ${due > 0 ? 'var(--color-warning)' : 'inherit'};">₹${fmt(due)}</td>
                     <td style="padding: 10px; text-align: center;">${statusBadge}</td>
                     <td style="padding: 10px; text-align: right;">${actionBtn}</td>
                   </tr>
@@ -216,7 +217,7 @@ async function showCustomerDetails(customerName) {
           }
           
           try {
-            await window.api.db.run(`UPDATE sales SET amount_paid = amount_paid + ? WHERE id = ?`, [amt, id]);
+            await window.api.db.run(`UPDATE sales SET amount_paid = COALESCE(amount_paid, 0) + ? WHERE id = ?`, [amt, id]);
             await window.api.db.run(`INSERT INTO customer_payments (sale_id, amount, payment_mode) VALUES (?, ?, ?)`, [id, amt, mode]);
             window.showToast('Payment recorded successfully!');
             payModal.remove();

@@ -187,6 +187,7 @@ export async function printInvoice(saleId, settings) {
 
   // Determine if ANY line has margin scheme (for totals masking)
   const hasMarginItems = lineItems.some(li => li.is_margin_applied);
+  const isEstimate = sale.invoice_type === 'Estimate';
 
   const currentDue = sale.grand_total - sale.amount_paid;
 
@@ -258,14 +259,14 @@ export async function printInvoice(saleId, settings) {
     <div style="font-size:11px;margin-top:4px;color:#333;">
       ${shopPhone ? `Phone: ${escPrint(shopPhone)}` : ''}${shopPhone && shopEmail ? ' | ' : ''}${shopEmail ? `Email: ${escPrint(shopEmail)}` : ''}
     </div>
-    ${shopGstin ? `<div style="font-size:12px;margin-top:4px;color:#000;"><strong>GSTIN: ${escPrint(shopGstin)}</strong></div>` : ''}
+    ${(shopGstin && !isEstimate) ? `<div style="font-size:12px;margin-top:4px;color:#000;"><strong>GSTIN: ${escPrint(shopGstin)}</strong></div>` : ''}
   </div>
 
   <hr class="divider-bold"/>
 
   <!-- Tax Invoice Title -->
   <div style="text-align:center;font-size:15px;font-weight:800;letter-spacing:0.14em;
-    text-transform:uppercase;margin:10px 0;position:relative;z-index:1;color:#000;">TAX INVOICE</div>
+    text-transform:uppercase;margin:10px 0;position:relative;z-index:1;color:#000;">${isEstimate ? 'COMMERCIAL ESTIMATE' : 'TAX INVOICE'}</div>
 
   <hr class="divider"/>
 
@@ -275,7 +276,7 @@ export async function printInvoice(saleId, settings) {
     <div style="font-size:12px;line-height:1.8;">
       <div><strong style="color:#000;">Customer:</strong> ${escPrint(sale.customer_name || 'Walk-in Customer')}</div>
       ${customerPhone ? `<div><strong style="color:#000;">Phone:</strong> ${escPrint(customerPhone)}</div>` : ''}
-      ${customerGstin ? `<div><strong style="color:#000;">Customer GSTIN:</strong> ${escPrint(customerGstin)}</div>` : ''}
+      ${(customerGstin && !isEstimate) ? `<div><strong style="color:#000;">Customer GSTIN:</strong> ${escPrint(customerGstin)}</div>` : ''}
     </div>
     <!-- Right Column: Document -->
     <div style="font-size:12px;line-height:1.8;text-align:right;">
@@ -330,21 +331,21 @@ export async function printInvoice(saleId, settings) {
     <!-- Right Column: Totals Pane -->
     <div style="display:flex;flex-direction:column;align-items:flex-end;">
       <div style="width:300px;border:1px solid #ccc;border-radius:6px;padding:12px;background:#fafafa;">
-        ${hasMarginItems ? `
+        ${(hasMarginItems && !isEstimate) ? `
         <div style="font-size:11px;color:#333;font-style:italic;margin-bottom:6px;text-align:center;">
           GST paid under Margin Scheme
         </div>` : `
         <div style="display:flex;justify-content:space-between;font-size:11px;color:#333;margin-bottom:5px;">
-          <span>SUB TOTAL (Base)</span>
+          <span>${isEstimate ? 'Subtotal' : 'SUB TOTAL (Base)'}</span>
           <span style="font-variant-numeric:tabular-nums;font-weight:500;">₹${fmt(sale.total_taxable)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:#333;margin-bottom:5px;">
           <span>CGST</span>
-          <span style="font-variant-numeric:tabular-nums;font-weight:500;">₹${fmt(sale.total_cgst)}</span>
+          <span style="font-variant-numeric:tabular-nums;font-weight:500;">₹${isEstimate ? '0.00' : fmt(sale.total_cgst)}</span>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:#333;margin-bottom:8px;">
           <span>SGST</span>
-          <span style="font-variant-numeric:tabular-nums;font-weight:500;">₹${fmt(sale.total_sgst)}</span>
+          <span style="font-variant-numeric:tabular-nums;font-weight:500;">₹${isEstimate ? '0.00' : fmt(sale.total_sgst)}</span>
         </div>
         `}
 
@@ -387,7 +388,9 @@ export async function printInvoice(saleId, settings) {
 
   <!-- Declaration -->
   <div style="margin-bottom:12px;font-size:9.5px;color:#333;line-height:1.5;font-style:italic;position:relative;z-index:1;">
-    We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. The goods sold are intended for direct consumption by the end consumer. All disputes are subject to local jurisdiction.
+    ${isEstimate 
+      ? 'This document is a commercial inventory valuation estimate and does not represent an official tax ledger invoice.' 
+      : 'We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct. The goods sold are intended for direct consumption by the end consumer. All disputes are subject to local jurisdiction.'}
   </div>
 
   <!-- Dual Signature blocks layout mapping -->

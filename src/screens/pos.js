@@ -51,6 +51,7 @@ function openModal(html, onMount) {
   backdrop.innerHTML = `<div class="fh-modal" style="max-width:480px;width:94%;">${html}</div>`;
   document.body.appendChild(backdrop);
   backdrop.addEventListener('click', e => { /* Backdrop click does NOT dismiss — anti-data-loss */ });
+  window.setupCustomSelects(backdrop);
   if (onMount) onMount(backdrop);
   return backdrop;
 }
@@ -145,6 +146,7 @@ const pos = {
   customerGstin:  '',
   paymentMode:    'Cash',
   amountPaid:     0,
+  isEstimateMode: false,
 };
 
 // ── Cart helpers ──────────────────────────────────────────────────────────────
@@ -173,15 +175,13 @@ function removeFromCart(itemId) {
 
 const PAYMENT_MODES = ['Cash', 'UPI', 'Card', 'Credit'];
 
-function categoryBadgeStyle(cat) {
-  const bg = {
-    'New Phone':      '#00FFB2',
-    'Accessory':      '#38bdf8',
-    'Used Phone':     '#a78bfa',
-    'Repair Service': '#fb923c',
-  }[cat] ?? '#aaa';
-  return `background: ${bg}; color: #0D0D0D; font-size: 10px; padding: 2px 7px; border-radius: 4px;
-    font-weight: 600; letter-spacing: 0.05em; white-space: nowrap;`;
+function categoryBadgeClass(cat) {
+  return {
+    'New Phone':      'badge-new-phone',
+    'Used Phone':     'badge-used-phone',
+    'Accessory':      'badge-accessory',
+    'Repair Service': 'badge-repair-service',
+  }[cat] ?? 'badge-default';
 }
 
 // ── Full screen render ────────────────────────────────────────────────────────
@@ -259,15 +259,7 @@ export async function renderPOS(container) {
               placeholder="Search items by name…"
               style="padding-left:34px;"
               autocomplete="off" />
-            <div id="pos-search-drop"
-              class="pos-search-drop"
-              style="
-                display:none;position:absolute;top:100%;left:0;right:0;
-                background:var(--color-surface);border:1px solid var(--color-border);
-                border-top:none;border-radius:0 0 8px 8px;
-                max-height:260px;overflow-y:auto;z-index:300;
-                box-shadow:0 8px 24px rgba(0,0,0,0.4);
-              "></div>
+             <div id="pos-search-drop" class="pos-search-drop fh-dropdown" style="display:none;"></div>
           </div>
         </div>
 
@@ -291,8 +283,14 @@ export async function renderPOS(container) {
 
         <!-- Order summary card -->
         <div class="fh-card" style="flex-shrink:0;">
-          <div class="fh-card-title" style="display: flex; align-items: center; gap: 8px;">
-            ${icons.billing(14)} Order Summary
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 18px; flex-wrap: wrap;">
+            <div class="fh-card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom: 0;">
+              ${icons.billing(14)} Order Summary
+            </div>
+            <label class="margin-toggle" style="font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 5px;">
+              <input type="checkbox" id="pos-estimate-toggle" ${pos.isEstimateMode ? 'checked' : ''} />
+              Commercial Estimate
+            </label>
           </div>
           <div id="pos-summary"></div>
         </div>
@@ -308,13 +306,7 @@ export async function renderPOS(container) {
             <input id="pos-cust-name" class="fh-input" type="text"
               placeholder="Walk-in Customer" autocomplete="off"
               value="${esc(pos.customerName)}" />
-            <div id="pos-cust-drop" class="pos-search-drop" style="
-                display:none;position:absolute;top:100%;left:0;right:0;
-                background:var(--color-surface);border:1px solid var(--color-border);
-                border-top:none;border-radius:0 0 8px 8px;
-                max-height:200px;overflow-y:auto;z-index:300;
-                box-shadow:0 8px 24px rgba(0,0,0,0.4);
-              "></div>
+             <div id="pos-cust-drop" class="pos-search-drop fh-dropdown" style="display:none;"></div>
           </div>
 
           <div class="fh-field">
@@ -407,7 +399,7 @@ export async function renderPOS(container) {
               white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">
               ${esc(item.name)}</div>
             <div style="display:flex;align-items:center;gap:8px;margin-top:3px;">
-              <span style="${categoryBadgeStyle(item.category)}">${esc(item.category)}</span>
+              <span class="fh-badge ${categoryBadgeClass(item.category)}">${esc(item.category)}</span>
               <span style="font-size:11px;opacity:0.5;">Stock: ${item.stock_qty}</span>
             </div>
           </div>
@@ -535,6 +527,16 @@ export async function renderPOS(container) {
     handleSavePrint(container, settings)
   );
 
+  const estimateToggle = container.querySelector('#pos-estimate-toggle');
+  if (estimateToggle) {
+    estimateToggle.addEventListener('change', (e) => {
+      pos.isEstimateMode = e.target.checked;
+      renderSummary(container);
+    });
+  }
+
+  window.setupCustomSelects(container);
+
   // Initial render
   renderCart(container);
   renderSummary(container);
@@ -589,7 +591,7 @@ function renderCart(container) {
         <div style="font-size:13px;font-weight:500;margin-bottom:4px;
           white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">
           ${esc(row.item.name)}</div>
-        <span style="${categoryBadgeStyle(row.item.category)}">${esc(row.item.category)}</span>
+        <span class="fh-badge ${categoryBadgeClass(row.item.category)}">${esc(row.item.category)}</span>
         ${isUsed ? `
           <div style="margin-top:6px;">
             <label class="margin-toggle">
@@ -736,17 +738,19 @@ function renderSummary(container) {
   const grandEl   = container.querySelector('#pos-grand-display');
   if (!summaryEl || !grandEl) return;
 
+  const isEst = pos.isEstimateMode;
+
   // Per-line breakdown rows
   const lineBreakdown = pos.cart.map(row => {
     const tax   = calcLineItemTax(row.unitPrice, row.item.gst_rate, row.useMargin, row.item.purchase_price);
-    const label = row.useMargin ? 'Margin' : `GST ${row.item.gst_rate}%`;
+    const label = isEst ? '' : (row.useMargin ? 'Margin' : `GST ${row.item.gst_rate}%`);
     return `
       <div style="display:flex;justify-content:space-between;padding:4px 0;
         font-size:11px;opacity:0.55;border-bottom:1px solid var(--color-border);">
         <span style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
           ${esc(row.item.name)} ×${row.qty}</span>
         <span style="white-space:nowrap;font-variant-numeric:tabular-nums;">
-          ${label} · ₹${fmt(round2(row.qty * row.unitPrice))}</span>
+          ${label ? label + ' · ' : ''}₹${fmt(round2(row.qty * row.unitPrice))}</span>
       </div>`;
   }).join('');
 
@@ -754,9 +758,9 @@ function renderSummary(container) {
     <div style="margin-bottom:12px;">${lineBreakdown}</div>
     <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-variant-numeric:tabular-nums;">
       ${[
-        ['Taxable Base', totals.total_taxable],
-        ['CGST',         totals.total_cgst],
-        ['SGST',         totals.total_sgst],
+        [isEst ? 'Subtotal Value' : 'Taxable Base', isEst ? totals.grand_total : totals.total_taxable],
+        ['CGST',         isEst ? 0 : totals.total_cgst],
+        ['SGST',         isEst ? 0 : totals.total_sgst],
       ].map(([label, val]) => `
         <div style="display:flex;justify-content:space-between;opacity:0.65;">
           <span>${label}</span>
@@ -837,24 +841,31 @@ async function handleSavePrint(container, settings) {
 
   try {
     // INSERT sales
-    let finalAmountPaid = pos.paymentMode !== 'Credit' ? totals.grand_total : pos.amountPaid;
+    let domAmt = container.querySelector('#pos-amt-paid') ? parseFloat(container.querySelector('#pos-amt-paid').value) : NaN;
+    let finalAmountPaid = pos.paymentMode !== 'Credit' ? totals.grand_total : (!isNaN(domAmt) ? domAmt : pos.amountPaid);
     if (finalAmountPaid > totals.grand_total) finalAmountPaid = totals.grand_total;
+
+    const invoiceType = pos.isEstimateMode ? 'Estimate' : 'Tax Invoice';
+    const finalTaxable = pos.isEstimateMode ? totals.grand_total : totals.total_taxable;
+    const finalCgst = pos.isEstimateMode ? 0 : totals.total_cgst;
+    const finalSgst = pos.isEstimateMode ? 0 : totals.total_sgst;
 
     const saleRes = await window.api.db.run(`
       INSERT INTO sales
         (invoice_number, customer_name, customer_gstin,
-         total_taxable, total_cgst, total_sgst, grand_total, amount_paid, payment_mode, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+         total_taxable, total_cgst, total_sgst, grand_total, amount_paid, payment_mode, status, invoice_type)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)`,
       [
         invoiceNumber,
         pos.customerName || 'Walk-in Customer',
         pos.customerGstin || '',
-        totals.total_taxable,
-        totals.total_cgst,
-        totals.total_sgst,
+        finalTaxable,
+        finalCgst,
+        finalSgst,
         totals.grand_total,
         finalAmountPaid,
         pos.paymentMode,
+        invoiceType
       ]
     );
 
@@ -877,6 +888,9 @@ async function handleSavePrint(container, settings) {
         row.unitPrice, row.item.gst_rate, row.useMargin, row.item.purchase_price
       );
 
+      const itemCgst = pos.isEstimateMode ? 0 : tax.cgst;
+      const itemSgst = pos.isEstimateMode ? 0 : tax.sgst;
+
       const siRes = await window.api.db.run(`
         INSERT INTO sale_items
           (sale_id, item_id, item_name, qty, price_per_unit,
@@ -889,8 +903,8 @@ async function handleSavePrint(container, settings) {
           row.qty,
           row.unitPrice,
           row.useMargin ? 1 : 0,
-          tax.cgst,
-          tax.sgst,
+          itemCgst,
+          itemSgst,
           row.imei || '',
           row.item.hsn_code || '',
         ]
@@ -940,6 +954,7 @@ async function handleSavePrint(container, settings) {
     pos.customerGstin = '';
     pos.paymentMode  = 'Cash';
     pos.amountPaid   = 0;
+    pos.isEstimateMode = false;
     pos.cart.forEach(r => r.imei = '');
 
     renderCart(container);

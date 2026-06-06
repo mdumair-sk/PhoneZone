@@ -26,6 +26,13 @@ export async function initDatabase() {
 
   console.log('[Phone Zone] Database schema initialised.');
 
+  // Migrate older databases to include invoice_type
+  try {
+    await window.api.db.run(`ALTER TABLE sales ADD COLUMN invoice_type TEXT CHECK(invoice_type IN ('Tax Invoice', 'Estimate')) DEFAULT 'Tax Invoice'`);
+  } catch (err) {
+    // Column may already exist, ignore error
+  }
+
   // Seed default settings if not already present
   const defaults = [
     ['shop_name', ''],

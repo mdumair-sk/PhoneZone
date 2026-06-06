@@ -81,9 +81,9 @@ export async function renderExpenses(container) {
         </div>
         
         <!-- Summary Box -->
-        <div class="fh-card" style="background: rgba(255, 68, 68, 0.05); border-color: rgba(255, 68, 68, 0.2);">
+        <div class="fh-card" style="background: color-mix(in srgb, var(--color-danger) 5%, transparent); border-color: color-mix(in srgb, var(--color-danger) 20%, transparent);">
           <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6;">Total Expenses This Month</div>
-          <div id="exp-month-total" style="font-size: 24px; font-weight: 800; color: #FF4444; font-variant-numeric: tabular-nums; margin-top: 4px;">
+          <div id="exp-month-total" style="font-size: 24px; font-weight: 800; color: var(--color-danger); font-variant-numeric: tabular-nums; margin-top: 4px;">
             ₹0.00
           </div>
         </div>
@@ -128,6 +128,8 @@ export async function renderExpenses(container) {
   container.querySelector('#filter-from').addEventListener('change', () => loadExpenses(container));
   container.querySelector('#filter-to').addEventListener('change', () => loadExpenses(container));
 
+  window.setupCustomSelects(container);
+
   await loadExpenses(container);
 }
 
@@ -163,7 +165,7 @@ async function loadExpenses(container) {
           <td style="padding: 12px 20px;">
             <span style="background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 11px;">${esc(e.category)}</span>
           </td>
-          <td style="padding: 12px 20px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: #FF4444;">₹${fmt(e.amount)}</td>
+          <td style="padding: 12px 20px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--color-danger);">₹${fmt(e.amount)}</td>
         </tr>
       `).join('');
     }

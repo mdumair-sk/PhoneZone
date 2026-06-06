@@ -35,37 +35,58 @@ window.THEMES = {
   dark: {
     label: '🌑 Dark',
     fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Inter' },
-    vars: { bg: '#0D0D0D', surface: '#1A1A1A', border: '#2A2A2A', text: '#E0E0E0', primary: '#00FFB2' }
+    vars: {
+      bg: '#0D0D0D', surface: '#1A1A1A', border: '#2A2A2A', text: '#E0E0E0', primary: '#00FFB2',
+      success: '#00FFB2', danger: '#FF4444', warning: '#FF8C00'
+    }
   },
   light: {
     label: '☀️ Light',
     fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Playfair Display' },
-    vars: { bg: '#FAFAFA', surface: '#FFFFFF', border: '#E2E8F0', text: '#0F172A', primary: '#2563EB' }
+    vars: {
+      bg: '#FAFAFA', surface: '#FFFFFF', border: '#E2E8F0', text: '#0F172A', primary: '#2563EB',
+      success: '#10B981', danger: '#EF4444', warning: '#F59E0B'
+    }
   },
   cyberpunk: {
     label: '⚡ Cyberpunk',
     fonts: { body: 'Orbitron', mono: 'Share Tech Mono', heading: 'Orbitron' },
-    vars: { bg: '#0D0D0D', surface: '#111111', border: '#1E1E1E', text: '#E0E0E0', primary: '#00FFB2' }
+    vars: {
+      bg: '#0D0D0D', surface: '#111111', border: '#1E1E1E', text: '#E0E0E0', primary: '#00FFB2',
+      success: '#00FFB2', danger: '#FF0055', warning: '#FFCC00'
+    }
   },
   nord: {
     label: '❄️ Nord',
     fonts: { body: 'Nunito', mono: 'JetBrains Mono', heading: 'Nunito' },
-    vars: { bg: '#2E3440', surface: '#3B4252', border: '#434C5E', text: '#ECEFF4', primary: '#88C0D0' }
+    vars: {
+      bg: '#2E3440', surface: '#3B4252', border: '#434C5E', text: '#ECEFF4', primary: '#88C0D0',
+      success: '#A3BE8C', danger: '#BF616A', warning: '#EBCB8B'
+    }
   },
   mocha: {
     label: '☕ Mocha',
     fonts: { body: 'Lato', mono: 'Fira Code', heading: 'Playfair Display' },
-    vars: { bg: '#1C1917', surface: '#292524', border: '#3C3835', text: '#E7E5E4', primary: '#FB923C' }
+    vars: {
+      bg: '#1C1917', surface: '#292524', border: '#3C3835', text: '#E7E5E4', primary: '#FB923C',
+      success: '#A6E3A1', danger: '#F38BA8', warning: '#F9E2AF'
+    }
   },
   'midnight-terminal': {
     label: '🌌 Midnight Terminal',
     fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Inter' },
-    vars: { bg: '#0B1020', surface: '#141B2D', border: '#26324D', text: '#E6EDF7', primary: '#58A6FF' }
+    vars: {
+      bg: '#0B1020', surface: '#141B2D', border: '#26324D', text: '#E6EDF7', primary: '#58A6FF',
+      success: '#4ADE80', danger: '#F87171', warning: '#FBBF24'
+    }
   },
   'neon-ember': {
     label: '🔥 Neon Ember',
     fonts: { body: 'Inter', mono: 'JetBrains Mono', heading: 'Inter' },
-    vars: { bg: '#0F0A0A', surface: '#1A1212', border: '#332222', text: '#FFF2E8', primary: '#FF7A45' }
+    vars: {
+      bg: '#0F0A0A', surface: '#1A1212', border: '#332222', text: '#FFF2E8', primary: '#FF7A45',
+      success: '#52E58C', danger: '#FF4D4D', warning: '#FFAE19'
+    }
   }
 };
 
@@ -90,7 +111,7 @@ window.applyTheme = async function applyTheme(themeId) {
     varsStyle.id = 'fh-theme-vars';
     document.head.appendChild(varsStyle);
   }
-  const { bg, surface, border, text, primary } = themeObj.vars;
+  const { bg, surface, border, text, primary, success = '#00FFB2', danger = '#FF4444', warning = '#FF8C00' } = themeObj.vars;
   varsStyle.textContent = `
     :root {
       --color-bg: ${bg};
@@ -98,6 +119,9 @@ window.applyTheme = async function applyTheme(themeId) {
       --color-border: ${border};
       --color-text: ${text};
       --color-primary: ${primary};
+      --color-success: ${success};
+      --color-danger: ${danger};
+      --color-warning: ${warning};
     }
   `;
 
@@ -116,7 +140,7 @@ window.applyTheme = async function applyTheme(themeId) {
 
     fontsStyle.textContent = `
       body, html, .fh-input, .fh-btn, .fh-label { font-family: '${body}', sans-serif; }
-      .mono, .fh-input[type="number"], .tabular-nums { font-family: '${mono}', monospace; }
+      .mono, .tabular-nums { font-family: '${mono}', monospace; }
       h1, h2, h3, .fh-card-title, .theme-heading-font { font-family: '${heading}', sans-serif; }
     `;
   }
@@ -149,10 +173,10 @@ function ensureToastContainer() {
 }
 
 const TOAST_COLORS = {
-  success: { bg: '#00FFB2', fg: '#0D0D0D' },
-  error: { bg: '#FF4444', fg: '#FFFFFF' },
+  success: { bg: 'var(--color-success)', fg: 'var(--color-bg)' },
+  error: { bg: 'var(--color-danger)', fg: '#FFFFFF' },
   info: { bg: '#38bdf8', fg: '#0D0D0D' },
-  warning: { bg: '#FF8C00', fg: '#0D0D0D' },
+  warning: { bg: 'var(--color-warning)', fg: 'var(--color-bg)' },
 };
 
 /**
@@ -202,6 +226,132 @@ window.showToast = function showToast(message, type = 'success') {
   setTimeout(dismiss, 3000);
   toast.addEventListener('click', dismiss);
 };
+
+// ── Custom Select System ──────────────────────────────────────────────────────
+
+window.setupCustomSelects = function setupCustomSelects(container) {
+  const selects = container.querySelectorAll('select.fh-input');
+  selects.forEach(select => {
+    // Prevent double initialization
+    if (select.dataset.customSelectInitialized) return;
+    select.dataset.customSelectInitialized = 'true';
+
+    select.style.display = 'none';
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'fh-select-wrapper';
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select); // move select inside wrapper
+
+    const trigger = document.createElement('div');
+    trigger.className = 'fh-select-trigger';
+    trigger.setAttribute('tabindex', '0');
+    
+    const triggerText = document.createElement('span');
+    const updateTriggerText = () => {
+      const selectedOpt = select.options[select.selectedIndex];
+      triggerText.textContent = selectedOpt ? selectedOpt.textContent : '';
+    };
+    updateTriggerText();
+
+    // Set up reactive property overrides to synchronize programmatically changed values
+    const originalValueDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+    Object.defineProperty(select, 'value', {
+      get() {
+        return originalValueDescriptor.get.call(this);
+      },
+      set(val) {
+        originalValueDescriptor.set.call(this, val);
+        updateTriggerText();
+      },
+      configurable: true
+    });
+
+    const originalSelectedIndexDescriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'selectedIndex');
+    Object.defineProperty(select, 'selectedIndex', {
+      get() {
+        return originalSelectedIndexDescriptor.get.call(this);
+      },
+      set(val) {
+        originalSelectedIndexDescriptor.set.call(this, val);
+        updateTriggerText();
+      },
+      configurable: true
+    });
+    
+    const triggerArrow = document.createElement('span');
+    triggerArrow.className = 'fh-select-trigger-arrow';
+    triggerArrow.innerHTML = '▼';
+
+    trigger.appendChild(triggerText);
+    trigger.appendChild(triggerArrow);
+    wrapper.appendChild(trigger);
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'fh-select-dropdown fh-dropdown';
+    wrapper.appendChild(dropdown);
+
+    const buildOptions = () => {
+      dropdown.innerHTML = '';
+      Array.from(select.options).forEach((opt, idx) => {
+        const optionEl = document.createElement('div');
+        optionEl.className = 'fh-select-option';
+        if (opt.selected) optionEl.classList.add('fh-select-option--selected');
+        optionEl.textContent = opt.textContent;
+        optionEl.dataset.value = opt.value;
+        optionEl.dataset.index = idx;
+
+        optionEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.selectedIndex = idx;
+          select.value = opt.value;
+          
+          updateTriggerText();
+          dropdown.style.display = 'none';
+          wrapper.classList.remove('fh-select-wrapper--open');
+          
+          // Trigger change event so existing listeners run
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        dropdown.appendChild(optionEl);
+      });
+    };
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === 'block';
+      
+      // Close all other dropdowns
+      document.querySelectorAll('.fh-select-dropdown').forEach(d => {
+        d.style.display = 'none';
+        d.parentNode.classList.remove('fh-select-wrapper--open');
+      });
+
+      if (!isOpen) {
+        buildOptions(); // Rebuild to ensure correct selected state
+        dropdown.style.display = 'block';
+        wrapper.classList.add('fh-select-wrapper--open');
+      }
+    });
+
+    // Handle accessibility/keydown
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        trigger.click();
+      }
+    });
+  });
+};
+
+// Global click handler to close dropdowns
+document.addEventListener('click', () => {
+  document.querySelectorAll('.fh-select-dropdown').forEach(d => {
+    d.style.display = 'none';
+    d.parentNode.classList.remove('fh-select-wrapper--open');
+  });
+});
 
 // ── Confirm modal system ──────────────────────────────────────────────────────
 
@@ -320,7 +470,7 @@ function injectGlobalStyles() {
     }
 
     /* Utility for tabular numeric data */
-    .mono, .fh-input[type="number"] {
+    .mono {
       font-family: 'JetBrains Mono', monospace;
     }
 
@@ -330,6 +480,9 @@ function injectGlobalStyles() {
       --color-border:   #2A2A2A;
       --color-text:     #E0E0E0;
       --color-primary:  #00FFB2;
+      --color-success:  #00FFB2;
+      --color-danger:   #FF4444;
+      --color-warning:  #FF8C00;
     }
     
     [data-theme="light"] {
@@ -338,6 +491,9 @@ function injectGlobalStyles() {
       --color-border:   #E2E8F0;
       --color-text:     #0F172A;
       --color-primary:  #2563EB;
+      --color-success:  #10B981;
+      --color-danger:   #EF4444;
+      --color-warning:  #F59E0B;
     }
 
     [data-theme="light"] aside {
@@ -351,10 +507,7 @@ function injectGlobalStyles() {
       transition: background 0.15s;
     }
     .fh-table-row:hover {
-      background: rgba(0, 255, 178, 0.04);
-    }
-    [data-theme="light"] .fh-table-row:hover {
-      background: rgba(37, 99, 235, 0.04);
+      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
     }
 
     [data-theme="cyberpunk"] {
@@ -412,12 +565,15 @@ function injectGlobalStyles() {
       border: 1px solid var(--color-border);
       color: var(--color-text);
       border-radius: 5px;
-      padding: 9px 12px;
+      padding: 9px 14px;
       font-family: inherit;
       font-size: 13.5px;
       outline: none;
       transition: border-color 0.15s;
       box-sizing: border-box;
+    }
+    input.fh-input, select.fh-input {
+      height: 38px;
     }
     .fh-input:focus       { border-color: var(--color-primary); }
     .fh-input::placeholder { opacity: 0.3; }
@@ -425,11 +581,13 @@ function injectGlobalStyles() {
     select.fh-input option { background: var(--color-surface); color: var(--color-text); }
 
     .fh-btn {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
       padding: 9px 18px; border-radius: 5px; border: none;
       cursor: pointer; font-family: inherit; font-size: 12px;
       font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
       transition: opacity 0.15s, transform 0.1s; white-space: nowrap;
+      height: 38px;
+      box-sizing: border-box;
     }
     .fh-btn:hover:not(:disabled) { opacity: 0.82; }
     .fh-btn:active:not(:disabled) { transform: scale(0.97); }
@@ -442,8 +600,8 @@ function injectGlobalStyles() {
       background: transparent; color: var(--color-text);
       border: 1px solid var(--color-border);
     }
-    .fh-btn-danger  { background: #FF4444; color: #fff; }
-    .fh-btn-warn    { background: #FF8C00; color: #0D0D0D; }
+    .fh-btn-danger  { background: var(--color-danger); color: #fff; }
+    .fh-btn-warn    { background: var(--color-warning); color: #0D0D0D; }
 
     .fh-card {
       background: var(--color-surface);
@@ -473,6 +631,161 @@ function injectGlobalStyles() {
       text-transform: uppercase;
       opacity: 0.45;
       margin-bottom: 6px;
+    }
+
+    /* Dropdowns */
+    .fh-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 500;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      border-top: none;
+    }
+    [data-theme="light"] .fh-dropdown {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Custom Select Component Styling */
+    .fh-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    
+    .fh-select-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      height: 38px;
+      overflow: hidden;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      border-radius: 5px;
+      padding: 9px 14px;
+      font-family: inherit;
+      font-size: 13.5px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      box-sizing: border-box;
+    }
+    
+    .fh-select-trigger:focus-visible {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+      outline: none;
+    }
+    
+    .fh-select-wrapper--open .fh-select-trigger {
+      border-color: var(--color-primary);
+    }
+    
+    .fh-select-trigger-arrow {
+      font-size: 8px;
+      opacity: 0.6;
+      transition: transform 0.15s ease;
+      margin-left: 8px;
+      pointer-events: none;
+    }
+    
+    .fh-select-wrapper--open .fh-select-trigger-arrow {
+      transform: rotate(180deg);
+    }
+    
+    .fh-select-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border) !important;
+      border-radius: 6px !important;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+    }
+    
+    [data-theme="light"] .fh-select-dropdown {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+    
+    .fh-select-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--color-text);
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+    
+    .fh-select-option:hover {
+      background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+      color: var(--color-primary);
+    }
+    
+    .fh-select-option--selected {
+      background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Category Badges */
+    .fh-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      text-transform: uppercase;
+    }
+    .badge-new-phone {
+      background: color-mix(in srgb, var(--color-success) 12%, transparent);
+      color: var(--color-success);
+      border: 1px solid color-mix(in srgb, var(--color-success) 20%, transparent);
+    }
+    .badge-used-phone {
+      background: rgba(167, 139, 250, 0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(167, 139, 250, 0.2);
+    }
+    [data-theme="light"] .badge-used-phone {
+      background: rgba(109, 40, 217, 0.08);
+      color: #6d28d9;
+      border: 1px solid rgba(109, 40, 217, 0.15);
+    }
+    .badge-accessory {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+    [data-theme="light"] .badge-accessory {
+      background: rgba(3, 105, 161, 0.08);
+      color: #0369a1;
+      border: 1px solid rgba(3, 105, 161, 0.15);
+    }
+    .badge-repair-service {
+      background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+      color: var(--color-warning);
+      border: 1px solid color-mix(in srgb, var(--color-warning) 20%, transparent);
+    }
+    .badge-default {
+      background: rgba(128, 128, 128, 0.12);
+      color: var(--color-text);
+      border: 1px solid rgba(128, 128, 128, 0.2);
     }
 
     /* Animations */
@@ -730,6 +1043,15 @@ function showLockScreen(storedHash) {
         await window.api.db.run(`UPDATE sales SET amount_paid = grand_total WHERE payment_mode != 'Credit'`);
         await window.api.db.run(`UPDATE sales SET amount_paid = 0.0 WHERE payment_mode = 'Credit'`);
       }
+    } catch (e) {
+      // Ignored if column already exists
+    }
+
+    // Migration: Add invoice_type if missing
+    try {
+      await window.api.db.run(`ALTER TABLE sales ADD COLUMN invoice_type TEXT CHECK(invoice_type IN ('Tax Invoice', 'Estimate')) DEFAULT 'Tax Invoice'`);
+      // Update existing records to 'Tax Invoice' just in case the default doesn't apply cleanly to existing rows in some SQLite versions
+      await window.api.db.run(`UPDATE sales SET invoice_type = 'Tax Invoice' WHERE invoice_type IS NULL`);
     } catch (e) {
       // Ignored if column already exists
     }

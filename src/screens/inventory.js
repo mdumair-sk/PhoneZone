@@ -55,6 +55,7 @@ function openModal(html, onMount) {
   backdrop.innerHTML = `<div class="fh-modal" style="max-width:520px;width:94%;">${html}</div>`;
   document.body.appendChild(backdrop);
   backdrop.addEventListener('click', e => { /* Backdrop click does NOT dismiss — anti-data-loss */ });
+  window.setupCustomSelects(backdrop);
   if (onMount) onMount(backdrop);
   return backdrop;
 }
@@ -176,16 +177,11 @@ function renderTableA(container) {
               ">
               <td style="padding:10px 14px;font-weight:500;">${esc(item.name)}</td>
               <td style="padding:10px 14px;">
-                <span style="
-                  font-size:10px;padding:3px 8px;border-radius:4px;
-                  letter-spacing:0.06em;
-                  background:${categoryColor(item.category)};
-                  color:#0D0D0D;font-weight:600;
-                ">${esc(item.category)}</span>
+                <span class="fh-badge ${categoryBadgeClass(item.category)}">${esc(item.category)}</span>
               </td>
               <td style="padding:10px 14px;font-size:12px;font-variant-numeric:tabular-nums;opacity:0.7;">${esc(item.hsn_code || '8471')}</td>
               <td style="padding:10px 14px;font-variant-numeric:tabular-nums;
-                color:${item.stock_qty === 0 ? '#FF4444' : item.stock_qty < 3 ? '#FF8C00' : 'inherit'}; font-weight:600;">
+                color:${item.stock_qty === 0 ? 'var(--color-danger)' : item.stock_qty < 3 ? 'var(--color-warning)' : 'inherit'}; font-weight:600;">
                 ${item.stock_qty}
               </td>
               <td style="padding:10px 14px;font-variant-numeric:tabular-nums;">₹${fmt(item.purchase_price)}</td>
@@ -256,13 +252,13 @@ function renderTableA(container) {
   });
 }
 
-function categoryColor(cat) {
+function categoryBadgeClass(cat) {
   return {
-    'New Phone':      '#00FFB2',
-    'Accessory':      '#38bdf8',
-    'Used Phone':     '#a78bfa',
-    'Repair Service': '#fb923c',
-  }[cat] ?? '#aaa';
+    'New Phone':      'badge-new-phone',
+    'Used Phone':     'badge-used-phone',
+    'Accessory':      'badge-accessory',
+    'Repair Service': 'badge-repair-service',
+  }[cat] ?? 'badge-default';
 }
 
 function itemModalHTML(item) {
@@ -270,8 +266,11 @@ function itemModalHTML(item) {
   const cat    = item?.category ?? 'New Phone';
   const isUsed = cat === 'Used Phone';
   return `
-    <div class="fh-card-title" style="display: flex; align-items: center; gap: 8px; margin-bottom:20px;">
-      ${isEdit ? icons.edit(14) : icons.plus(14)} ${isEdit ? 'Edit Item' : 'New Item'}
+    <div class="fh-card-title" style="display: flex; align-items: center; justify-content: space-between; margin-bottom:20px;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        ${isEdit ? icons.edit(14) : icons.plus(14)} ${isEdit ? 'Edit Item' : 'New Item'}
+      </div>
+      <button class="fh-btn-ghost" id="im-close-icon" style="border:none;padding:4px;font-size:16px;line-height:1;height:auto;cursor:pointer;opacity:0.6;background:transparent;">✕</button>
     </div>
 
     <div class="fh-field">
@@ -293,7 +292,7 @@ function itemModalHTML(item) {
       <div class="fh-field">
         <label class="fh-label">Stock Qty</label>
         <input id="im-stock" class="fh-input" type="number" min="0" step="1"
-          value="${item?.stock_qty ?? 0}"
+          onfocus="this.select()" value="${item?.stock_qty ?? 0}"
           ${isEdit ? 'disabled title="Manage stock via Log Purchase tab"' : ''}
           style="${isEdit ? 'opacity:0.4;cursor:not-allowed;' : ''}" />
         ${isEdit ? `<div style="font-size:10px;opacity:0.35;margin-top:4px;letter-spacing:0.05em;">
@@ -303,19 +302,19 @@ function itemModalHTML(item) {
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;align-items:flex-end;">
       <div class="fh-field">
-        <label class="fh-label">Purchase Price (₹)</label>
+        <label class="fh-label">Purchase (₹)</label>
         <input id="im-purchase" class="fh-input" type="number" min="0" step="0.01"
-          value="${item?.purchase_price ?? 0}" />
+          onfocus="this.select()" value="${item?.purchase_price ?? 0}" />
       </div>
       <div class="fh-field">
-        <label class="fh-label">Sell Price (₹)</label>
+        <label class="fh-label">Sell (₹)</label>
         <input id="im-sell" class="fh-input" type="number" min="0" step="0.01"
-          value="${item?.sell_price ?? 0}" />
+          onfocus="this.select()" value="${item?.sell_price ?? 0}" />
       </div>
       <div class="fh-field">
-        <label class="fh-label">GST Rate (%)</label>
+        <label class="fh-label">GST (%)</label>
         <input id="im-gst" class="fh-input" type="number" min="0" max="100" step="0.5"
-          value="${item?.gst_rate ?? 18}" />
+          onfocus="this.select()" value="${item?.gst_rate ?? 18}" />
       </div>
       <div class="fh-field">
         <label class="fh-label">HSN Code</label>
@@ -323,16 +322,16 @@ function itemModalHTML(item) {
           placeholder="e.g. 8517"
           value="${esc(item?.hsn_code ?? '8471')}"
           maxlength="8"
-          style="font-variant-numeric:tabular-nums;letter-spacing:0.06em;" />
+          onfocus="this.select()" style="font-variant-numeric:tabular-nums;letter-spacing:0.06em;" />
       </div>
     </div>
 
-    <div class="fh-field" id="im-margin-field" style="${isUsed ? '' : 'opacity:0.3;pointer-events:none;'}">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+    <div class="fh-field" id="im-margin-field" style="${isUsed ? '' : 'opacity:0.45;pointer-events:none;'}">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-top:2px;">
         <input id="im-margin" type="checkbox" ${item?.is_margin_scheme ? 'checked' : ''}
           ${isUsed ? '' : 'disabled'}
-          style="width:16px;height:16px;accent-color:var(--color-primary);cursor:pointer;" />
-        <span style="font-size:12px;letter-spacing:0.06em;">
+          style="width:16px;height:16px;accent-color:var(--color-primary);cursor:pointer;margin:0;" />
+        <span style="font-size:12px;letter-spacing:0.06em;line-height:1;">
           Enable GST Margin Scheme
           <span style="opacity:0.45;"> — Used Phones only</span>
         </span>
@@ -365,6 +364,7 @@ function openItemModal(item, container) {
     });
 
     m.querySelector('#im-cancel').addEventListener('click', () => m.remove());
+    m.querySelector('#im-close-icon')?.addEventListener('click', () => m.remove());
 
     m.querySelector('#im-save').addEventListener('click', async () => {
       const errEl = m.querySelector('#im-error');
@@ -459,13 +459,7 @@ function buildTabB(container) {
           <input id="pur-item-search" class="fh-input" type="text"
             placeholder="Type to search items…"
             autocomplete="off" />
-          <div id="pur-item-dropdown"
-            style="
-              display:none;position:absolute;top:100%;left:0;right:0;
-              background:var(--color-surface);border:1px solid var(--color-border);
-              border-top:none;border-radius:0 0 6px 6px;
-              max-height:200px;overflow-y:auto;z-index:200;
-            "></div>
+          <div id="pur-item-dropdown" class="pur-item-dropdown fh-dropdown" style="display:none;"></div>
         </div>
         <input id="pur-item-id" type="hidden" value="" />
         <div id="pur-item-name-display"
@@ -695,7 +689,7 @@ async function openInvoiceDetailModal(saleId, container) {
   const itemsRes = await window.api.db.query(`SELECT * FROM sale_items WHERE sale_id = ?`, [saleId]);
   const lineItems = itemsRes.ok ? itemsRes.rows : [];
 
-  const statusColor = sale.status === 'Active' ? '#00FFB2' : (sale.status === 'Voided' ? '#FF4444' : '#F59E0B');
+  const statusColor = sale.status === 'Active' ? 'var(--color-success)' : (sale.status === 'Voided' ? 'var(--color-danger)' : 'var(--color-warning)');
 
   const lineRows = lineItems.map(li => {
     const amount = li.qty * li.price_per_unit;
@@ -1038,6 +1032,8 @@ export async function renderInventory(container) {
   buildTabA(container);
   buildTabB(container);
   buildTabC(container);
+
+  window.setupCustomSelects(container);
 
   // Wire tab switcher
   container.querySelectorAll('[data-tab]').forEach(btn => {

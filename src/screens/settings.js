@@ -27,6 +27,7 @@ function openModal(html, onMount) {
   backdrop.innerHTML = `<div class="fh-modal">${html}</div>`;
   document.body.appendChild(backdrop);
   // Backdrop click does NOT dismiss — anti-data-loss
+  window.setupCustomSelects(backdrop);
   if (onMount) onMount(backdrop);
   return backdrop;
 }
@@ -318,11 +319,20 @@ function wireThemeChips(container) {
           ${icons.plus(14)} Import Custom Theme
         </div>
         <div style="margin-bottom:12px;font-size:12px;opacity:0.7;">Paste theme JSON below:</div>
-        <textarea id="custom-theme-json" class="fh-input" rows="8" style="font-family:monospace;font-size:11px;" placeholder='{
+        <textarea id="custom-theme-json" class="fh-input" rows="11" style="font-family:monospace;font-size:11px;" placeholder='{
   "id": "mytheme",
   "label": "My Theme",
   "fonts": { "body": "Inter", "mono": "Fira Code", "heading": "Inter" },
-  "vars": { "bg": "#111", "surface": "#222", "border": "#333", "text": "#eee", "primary": "#f00" }
+  "vars": {
+    "bg": "#111111",
+    "surface": "#222222",
+    "border": "#333333",
+    "text": "#eeeeee",
+    "primary": "#ff0000",
+    "success": "#00ffb2",
+    "danger": "#ff4444",
+    "warning": "#ff8c00"
+  }
 }'></textarea>
         <div id="theme-err" style="color:#FF4444;font-size:11px;min-height:16px;margin-top:8px;"></div>
         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
@@ -430,16 +440,19 @@ function wireBackup(container) {
         a.click(); URL.revokeObjectURL(url);
       }
       btn.textContent = '✓ Saved';
-      btn.style.background = '#00C896';
+      btn.style.background = 'var(--color-primary)';
+      btn.style.color = 'var(--color-bg)';
     } catch (e) {
       btn.textContent = '✗ Failed';
       btn.style.background = '#FF4444';
+      btn.style.color = '#FFFFFF';
       console.error(e);
     } finally {
       setTimeout(() => {
         btn.disabled = false;
         btn.innerHTML = `${icons.download(14)} Download Backup`;
         btn.style.background = '';
+        btn.style.color = '';
       }, 2500);
     }
   });
@@ -751,6 +764,8 @@ export async function renderSettings(container) {
     wireClearSales(body);
     wireFactoryReset(body);
 
+    window.setupCustomSelects(body);
+
     const saveBtn = document.createElement('div');
     saveBtn.style.cssText = 'position:sticky;bottom:0;padding:16px 0;background:linear-gradient(transparent,var(--color-bg) 30%);z-index:10;';
     saveBtn.innerHTML = `
@@ -781,13 +796,15 @@ export async function renderSettings(container) {
       }
 
       btn.textContent = '✓ Saved';
-      btn.style.background = '#00C896';
+      btn.style.background = 'var(--color-primary)';
+      btn.style.color = 'var(--color-bg)';
       window.showToast('System settings saved successfully.', 'success');
 
       setTimeout(() => {
         btn.disabled = false;
         btn.innerHTML = `${icons.save(14)} Save System Settings`;
         btn.style.background = '';
+        btn.style.color = '';
       }, 2000);
     });
   } catch (err) {

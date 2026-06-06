@@ -154,7 +154,7 @@ export async function renderDashboard(container) {
         </div>
         <div class="fh-card" style="display: flex; flex-direction: column; gap: 8px;">
           <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.6;">Monthly Profit Ind.</div>
-          <div style="font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; color: ${monthProfit >= 0 ? '#00FFB2' : '#FF4444'};">
+          <div style="font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; color: ${monthProfit >= 0 ? 'var(--color-success)' : 'var(--color-danger)'};">
             ${monthProfit >= 0 ? '+' : '-'}₹${fmt(Math.abs(monthProfit))}
           </div>
           <div style="font-size: 10px; opacity: 0.5;">Rev: ₹${fmt(monthRev)} | Exp: ₹${fmt(monthExp)}</div>
@@ -197,8 +197,8 @@ export async function renderDashboard(container) {
         <!-- Right Col -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
           <!-- Low Stock -->
-          <div class="fh-card" style="${lowStock.length > 0 ? 'border: 1px solid #FF8C00; background: rgba(255, 140, 0, 0.03);' : ''}">
-            <div class="fh-card-title" style="display: flex; align-items: center; gap: 8px; ${lowStock.length > 0 ? 'color: #FF8C00;' : ''}">
+          <div class="fh-card" style="${lowStock.length > 0 ? 'border: 1px solid var(--color-warning); background: color-mix(in srgb, var(--color-warning) 3%, transparent);' : ''}">
+            <div class="fh-card-title" style="display: flex; align-items: center; gap: 8px; ${lowStock.length > 0 ? 'color: var(--color-warning);' : ''}">
               ${icons.alert(14)} Low Stock Alerts
             </div>
             ${lowStock.length === 0 ? '<div style="opacity: 0.5; font-size: 12px;">All items are sufficiently stocked.</div>' : `
@@ -206,7 +206,7 @@ export async function renderDashboard(container) {
                 ${lowStock.map(ls => `
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 13px; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${esc(ls.name)}">${esc(ls.name)}</span>
-                    <span style="font-size: 12px; font-weight: 700; color: ${ls.stock_qty <= 0 ? '#FF4444' : '#FF8C00'}; background: rgba(255, 68, 68, 0.1); padding: 2px 6px; border-radius: 4px;">
+                    <span style="font-size: 12px; font-weight: 700; color: ${ls.stock_qty <= 0 ? 'var(--color-danger)' : 'var(--color-warning)'}; background: color-mix(in srgb, ${ls.stock_qty <= 0 ? 'var(--color-danger)' : 'var(--color-warning)'} 10%, transparent); padding: 2px 6px; border-radius: 4px;">
                       ${ls.stock_qty} left
                     </span>
                   </div>

@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS sales (
     grand_total     REAL    NOT NULL,
     amount_paid     REAL    DEFAULT 0.0,
     payment_mode    TEXT    CHECK(payment_mode IN ('Cash', 'UPI', 'Card', 'Credit')) DEFAULT 'Cash',
-    status          TEXT    CHECK(status IN ('Active', 'Voided', 'Refunded')) DEFAULT 'Active'
+    status          TEXT    CHECK(status IN ('Active', 'Voided', 'Refunded')) DEFAULT 'Active',
+    invoice_type    TEXT    CHECK(invoice_type IN ('Tax Invoice', 'Estimate')) DEFAULT 'Tax Invoice'
 );
 
 -- 5. Sales Line Items (Stock-Out Ledger)

@@ -137,6 +137,7 @@ async function fetchGSTR1Rows(startDate, endDate) {
     JOIN   sale_items si ON si.sale_id = s.id
     WHERE  s.sale_date BETWEEN ? AND ?
       AND  s.status = 'Active'
+      AND  s.invoice_type = 'Tax Invoice'
     ORDER  BY s.sale_date, s.invoice_number
   `, [start, end]);
 
@@ -397,11 +398,13 @@ function setButtonState(btn, state, originalHTML) {
     btn.style.cursor     = 'not-allowed';
   } else if (state === 'success') {
     btn.innerHTML        = '✓ Downloaded';
-    btn.style.background = '#00C896';
+    btn.style.background = 'var(--color-primary)';
+    btn.style.color      = 'var(--color-bg)';
     btn.disabled         = true;
   } else if (state === 'error') {
     btn.innerHTML        = '✗ Failed';
     btn.style.background = '#FF4444';
+    btn.style.color      = '#FFFFFF';
     btn.disabled         = true;
   } else {
     btn.innerHTML        = originalHTML;
@@ -409,6 +412,7 @@ function setButtonState(btn, state, originalHTML) {
     btn.style.opacity    = '';
     btn.style.cursor     = '';
     btn.style.background = '';
+    btn.style.color      = '';
   }
 }
 
