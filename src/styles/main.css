@@ -82,3 +82,213 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Antigravity Premium Animation System ───────────────────────────────────── */
+
+/* Ease definitions */
+:root {
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-back-out: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Screen Transitions */
+.fh-screen-enter {
+  animation: fhScreenSlideUp 0.4s var(--ease-expo-out) forwards;
+}
+
+@keyframes fhScreenSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Button Polishes */
+.fh-btn {
+  transition: all 0.25s var(--ease-expo-out) !important;
+}
+.fh-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+.fh-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+.fh-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+.fh-btn-danger:hover:not(:disabled) {
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+/* Form inputs focus/glow transitions */
+.fh-input {
+  transition: border-color 0.2s var(--ease-in-out),
+              box-shadow 0.2s var(--ease-in-out),
+              background-color 0.2s var(--ease-in-out),
+              color 0.2s var(--ease-in-out) !important;
+}
+.fh-input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent) !important;
+}
+
+/* Sidebar navigation item sliding hover */
+.nav-item {
+  transition: all 0.25s var(--ease-expo-out) !important;
+  position: relative;
+}
+.nav-item:hover:not(.nav-item--active) {
+  padding-left: 24px !important;
+  opacity: 0.95 !important;
+  color: var(--color-primary) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+.nav-item--active {
+  padding-left: 24px !important;
+  animation: navPulseBorder 2.5s infinite ease-in-out;
+}
+@keyframes navPulseBorder {
+  0%, 100% { box-shadow: inset 4px 0 0 0 var(--color-primary); }
+  50% { box-shadow: inset 6px 0 0 0 var(--color-primary); }
+}
+
+/* Cards elevation and scaling */
+.fh-card {
+  transition: transform 0.3s var(--ease-expo-out),
+              box-shadow 0.3s var(--ease-expo-out),
+              border-color 0.3s var(--ease-expo-out) !important;
+}
+.fh-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-border)) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16) !important;
+}
+[data-theme="light"] .fh-card:hover {
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Table Row Zoom & smooth highlight */
+.fh-table-row {
+  transition: background-color 0.2s var(--ease-expo-out),
+              transform 0.2s var(--ease-expo-out) !important;
+}
+.fh-table-row:hover {
+  transform: scale(1.002);
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent) !important;
+}
+
+/* Custom Select Dropdowns animations */
+.fh-select-dropdown, .fh-dropdown {
+  transform-origin: top center;
+  animation: fhDropdownReveal 0.25s var(--ease-expo-out) forwards !important;
+}
+@keyframes fhDropdownReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Modal and Backdrop transition overrides */
+.fh-modal-backdrop {
+  backdrop-filter: blur(8px) !important;
+  animation: fhFadeInEffect 0.3s var(--ease-expo-out) forwards !important;
+}
+@keyframes fhFadeInEffect {
+  from { opacity: 0; background: rgba(0, 0, 0, 0); }
+  to { opacity: 1; background: rgba(0, 0, 0, 0.72); }
+}
+
+.fh-modal {
+  animation: fhModalBounce 0.4s var(--ease-back-out) forwards !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35) !important;
+}
+[data-theme="light"] .fh-modal {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08) !important;
+}
+@keyframes fhModalBounce {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Animated SVG Bar Charts */
+.fh-bar-chart rect {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: fhBarGrowAnimation 1.2s var(--ease-expo-out) forwards;
+}
+@keyframes fhBarGrowAnimation {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* Micro interaction badges */
+.fh-badge {
+  transition: transform 0.2s var(--ease-expo-out), filter 0.2s var(--ease-expo-out) !important;
+}
+.fh-badge:hover {
+  transform: translateY(-1px) scale(1.04);
+  filter: brightness(1.12);
+}
+
+/* Shimmer Loading effects */
+.shimmer {
+  background: linear-gradient(90deg, 
+    var(--color-surface) 25%, 
+    color-mix(in srgb, var(--color-primary) 8%, var(--color-surface)) 50%, 
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmerReveal 1.6s infinite linear;
+}
+@keyframes shimmerReveal {
+  from { background-position: -200% 0; }
+  to { background-position: 200% 0; }
+}
+
+/* Toast Stacking Animation */
+.fh-toast-animate-in {
+  animation: fhToastSlideIn 0.35s var(--ease-back-out) forwards !important;
+}
+.fh-toast-animate-out {
+  animation: fhToastSlideOut 0.25s var(--ease-expo-out) forwards !important;
+}
+@keyframes fhToastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fhToastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}
+

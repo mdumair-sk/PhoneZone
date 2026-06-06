@@ -2,6 +2,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Phone Zone — Professional A4 Invoice Print Layout
 // ─────────────────────────────────────────────────────────────────────────────
+import logoUrl from '../../assets/logo-without-bg.png';
 
 function fmt(n, d = 2) {
   return Number(n ?? 0).toLocaleString('en-IN', {
@@ -286,22 +287,43 @@ export async function printInvoice(saleId, settings) {
     </div>
   </div>
 
-  <!-- Line Items Table -->
-  <table style="border: 1px solid #bbb; border-collapse: collapse; margin-bottom:0;position:relative;z-index:1;">
-    <thead>
-      <tr style="border-bottom:2px solid #000;background:#f2f2f2;height:35px;">
-        <th style="padding:8px 8px;text-align:center;font-size:11px;width:45px;border-right:1px solid #bbb;color:#000;">S.No.</th>
-        <th style="padding:8px 8px;text-align:center;font-size:11px;width:75px;border-right:1px solid #bbb;color:#000;">HSN</th>
-        <th style="padding:8px 8px;text-align:left;font-size:11px;border-right:1px solid #bbb;color:#000;">Item Description</th>
-        <th style="padding:8px 8px;text-align:center;font-size:11px;width:45px;border-right:1px solid #bbb;color:#000;">Qty</th>
-        <th style="padding:8px 8px;text-align:right;font-size:11px;width:95px;border-right:1px solid #bbb;color:#000;">Rate</th>
-        <th style="padding:8px 8px;text-align:right;font-size:11px;width:110px;color:#000;">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${lineRows.join('')}
-    </tbody>
-  </table>
+  <!-- Table Container with Watermark -->
+  <div style="position: relative; z-index: 1;">
+    <!-- Watermark Background -->
+    <div style="
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      width: 440px;
+      height: 440px;
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    ">
+      <img src="${logoUrl}" style="width: 100%; height: 100%; object-fit: contain; filter: invert(1) grayscale(1);" />
+    </div>
+
+    <!-- Line Items Table -->
+    <table style="width:100%; border: 1px solid #bbb; border-collapse: collapse; margin-bottom:0;position:relative;z-index:1;">
+      <thead>
+        <tr style="border-bottom:2px solid #000;background:#f2f2f2;height:35px;">
+          <th style="padding:8px 8px;text-align:center;font-size:11px;width:45px;border-right:1px solid #bbb;color:#000;">S.No.</th>
+          <th style="padding:8px 8px;text-align:center;font-size:11px;width:75px;border-right:1px solid #bbb;color:#000;">HSN</th>
+          <th style="padding:8px 8px;text-align:left;font-size:11px;border-right:1px solid #bbb;color:#000;">Item Description</th>
+          <th style="padding:8px 8px;text-align:center;font-size:11px;width:45px;border-right:1px solid #bbb;color:#000;">Qty</th>
+          <th style="padding:8px 8px;text-align:right;font-size:11px;width:95px;border-right:1px solid #bbb;color:#000;">Rate</th>
+          <th style="padding:8px 8px;text-align:right;font-size:11px;width:110px;color:#000;">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lineRows.join('')}
+      </tbody>
+    </table>
+  </div>
 
   <!-- Dual Layout below items: Terms/Bank on left, Totals on right -->
   <div style="display:flex;justify-content:space-between;margin-top:14px;position:relative;z-index:1;gap:20px;">
@@ -417,5 +439,5 @@ export async function printInvoice(saleId, settings) {
   pw.document.write(html);
   pw.document.close();
   pw.focus();
-  setTimeout(() => { pw.print(); pw.close(); }, 600);
+  setTimeout(() => { pw.print(); pw.close(); }, 800);
 }

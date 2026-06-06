@@ -33,7 +33,7 @@ function generateBarChartSVG(data, width = 300, height = 100) {
   const maxVal = Math.max(...data.map(d => d.value), 1);
   const barWidth = width / data.length;
   
-  let svg = `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">`;
+  let svg = `<svg class="fh-bar-chart" width="100%" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">`;
   
   data.forEach((d, i) => {
     const h = (d.value / maxVal) * (height - 20); // 20px padding for labels

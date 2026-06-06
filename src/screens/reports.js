@@ -63,19 +63,10 @@ function triggerDownload(blob, filename) {
 }
 
 function showToast(msg, color = 'var(--color-primary)') {
-  const t = document.createElement('div');
-  t.textContent = msg;
-  Object.assign(t.style, {
-    position: 'fixed', top: '24px', right: '24px',
-    background: color, color: '#0D0D0D',
-    padding: '10px 20px', borderRadius: '6px',
-    fontSize: '12px', fontWeight: '600', letterSpacing: '0.06em',
-    zIndex: '9999', boxShadow: `0 4px 24px ${color}55`,
-    animation: 'fhToastIn 0.2s ease', pointerEvents: 'none',
-  });
-  document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; }, 2700);
-  setTimeout(() => t.remove(), 3100);
+  let type = 'success';
+  if (color === '#FF4444' || color === 'var(--color-danger)') type = 'error';
+  else if (color === '#F59E0B' || color === 'var(--color-warning)' || color === '#FF8C00') type = 'warning';
+  window.showToast(msg, type);
 }
 
 // ── Data fetchers ─────────────────────────────────────────────────────────────

@@ -12,6 +12,7 @@ import { renderExpenses } from './screens/expenses.js';
 import { renderReports } from './screens/reports.js';
 import { renderSettings } from './screens/settings.js';
 import { icons } from './utils/icons.js';
+import logoUrl from '../assets/logo.jpg';
 
 // ── Global helpers ────────────────────────────────────────────────────────────
 
@@ -189,39 +190,29 @@ window.showToast = function showToast(message, type = 'success') {
   const wrap = ensureToastContainer();
 
   const toast = document.createElement('div');
+  toast.className = 'fh-toast-animate-in';
   toast.textContent = message;
   Object.assign(toast.style, {
     background: bg,
     color: fg,
-    padding: '10px 18px',
-    borderRadius: '6px',
-    fontSize: '12px',
+    padding: '12px 20px',
+    borderRadius: '8px',
+    fontSize: '12.5px',
     fontWeight: '600',
-    letterSpacing: '0.05em',
-    boxShadow: `0 4px 20px ${bg}66`,
-    opacity: '0',
-    transform: 'translateY(-8px)',
-    transition: 'opacity 0.18s ease, transform 0.18s ease',
+    letterSpacing: '0.04em',
+    boxShadow: `0 8px 30px ${bg}44`,
     pointerEvents: 'auto',
-    maxWidth: '320px',
-    lineHeight: '1.4',
+    maxWidth: '340px',
+    lineHeight: '1.45',
     fontFamily: 'inherit',
+    transition: 'all 0.3s var(--ease-expo-out)',
   });
   wrap.appendChild(toast);
 
-  // Animate in
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    });
-  });
-
   // Fade out and remove
   const dismiss = () => {
-    toast.style.opacity = '0';
-    toast.style.transform = 'translateY(-8px)';
-    setTimeout(() => toast.remove(), 200);
+    toast.className = 'fh-toast-animate-out';
+    setTimeout(() => toast.remove(), 260);
   };
   setTimeout(dismiss, 3000);
   toast.addEventListener('click', dismiss);
@@ -435,6 +426,11 @@ window.__showScreen = function showScreen(name) {
 
   const content = document.getElementById('content');
   if (!content) return;
+
+  // Trigger screen transition
+  content.classList.remove('fh-screen-enter');
+  void content.offsetWidth; // Force reflow
+  content.classList.add('fh-screen-enter');
 
   switch (name) {
     case 'dashboard': renderDashboard(content); break;
@@ -837,17 +833,27 @@ function buildShell() {
         z-index: 50;
       ">
         <!-- Logo -->
-        <div style="padding: 24px 20px 20px; flex-shrink: 0;">
-          <div id="nav-shop-name" class="theme-heading-font" style="font-size: 22px; font-weight: 800;
-            color: var(--color-primary); letter-spacing: 0.02em; line-height: 1.15;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-            overflow: hidden; text-overflow: ellipsis; word-break: break-word; max-width: 210px; transition: font-size 0.2s;">
-            Phone Zone
+        <div style="padding: 24px 20px 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+          <div style="
+            width: 100%;
+            height: 110px;
+            background: #000000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--color-border);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+          " onmouseover="this.style.transform='scale(1.02)'; this.style.borderColor='var(--color-primary)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.4)';" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='var(--color-border)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.3)';">
+            <img src="${logoUrl}" alt="Shop Logo" style="
+              width: 100%;
+              height: 100%;
+              object-fit: contain;
+              transform: scale(1.4);
+            " />
           </div>
-          <div id="nav-shop-sub" class="theme-heading-font" style="
-            font-size: 10px; letter-spacing: 0.2em; font-weight: 700;
-            opacity: 0.5; margin-top: 3px; text-transform: uppercase;
-          ">Shop Manager</div>
         </div>
 
         <!-- Nav links -->
@@ -885,7 +891,7 @@ function buildShell() {
           font-size: 10px; opacity: 0.18;
           letter-spacing: 0.1em; text-transform: uppercase;
           border-top: 1px solid var(--color-border);
-        ">v1.0.0</div>
+        ">v1.1.0</div>
       </aside>
 
       <!-- Content -->
