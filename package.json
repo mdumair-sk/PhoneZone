@@ -1,6 +1,6 @@
 {
   "name": "phone-zone",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Offline desktop POS for mobile phone retail shops",
   "author": "umair",
   "main": "main.js",

@@ -885,7 +885,7 @@ function buildShell() {
           font-size: 10px; opacity: 0.18;
           letter-spacing: 0.1em; text-transform: uppercase;
           border-top: 1px solid var(--color-border);
-        ">v1.1.0</div>
+        ">v1.1.1</div>
       </aside>
 
       <!-- Content -->
