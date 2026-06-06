@@ -294,7 +294,7 @@ export async function printInvoice(saleId, settings) {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(-15deg);
+      transform: translate(-50%, -50%);
       width: 440px;
       height: 440px;
       opacity: 0.04;

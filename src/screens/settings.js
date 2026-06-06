@@ -2,6 +2,17 @@ import { icons } from '../utils/icons.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+function toLocalSqlDateTime(dateStr) {
+  if (!dateStr) return null;
+  if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const pad2 = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
 async function loadSettings() {
   const res = await window.api.db.query(`SELECT key, value FROM settings`);
   if (!res.ok) return {};
@@ -525,7 +536,7 @@ function wireImportBackup(container) {
       for (const row of (data.purchases ?? [])) {
         const r = await window.api.db.run(
           `INSERT OR IGNORE INTO purchases (id, item_id, qty, purchase_rate, supplier_name, purchase_date) VALUES (?, ?, ?, ?, ?, ?)`,
-          [row.id ?? null, row.item_id ?? null, row.qty ?? 0, row.purchase_rate ?? 0, row.supplier_name ?? '', row.purchase_date ?? new Date().toISOString()]
+          [row.id ?? null, row.item_id ?? null, row.qty ?? 0, row.purchase_rate ?? 0, row.supplier_name ?? '', row.purchase_date ? toLocalSqlDateTime(row.purchase_date) : toLocalSqlDateTime(new Date())]
         );
         if (r.ok && r.changes > 0) imported.purchases++;
         else if (!r.ok) errors.push(`purchase id=${row.id}: ${r.error}`);
@@ -534,7 +545,7 @@ function wireImportBackup(container) {
       for (const row of (data.sales ?? [])) {
         const r = await window.api.db.run(
           `INSERT OR IGNORE INTO sales (id, invoice_number, sale_date, customer_name, customer_gstin, total_taxable, total_cgst, total_sgst, grand_total, payment_mode, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [row.id ?? null, row.invoice_number ?? '', row.sale_date ?? new Date().toISOString(), row.customer_name ?? 'Walk-in Customer', row.customer_gstin ?? '', row.total_taxable ?? 0, row.total_cgst ?? 0, row.total_sgst ?? 0, row.grand_total ?? 0, row.payment_mode ?? 'Cash', row.status ?? 'Active']
+          [row.id ?? null, row.invoice_number ?? '', row.sale_date ? toLocalSqlDateTime(row.sale_date) : toLocalSqlDateTime(new Date()), row.customer_name ?? 'Walk-in Customer', row.customer_gstin ?? '', row.total_taxable ?? 0, row.total_cgst ?? 0, row.total_sgst ?? 0, row.grand_total ?? 0, row.payment_mode ?? 'Cash', row.status ?? 'Active']
         );
         if (r.ok && r.changes > 0) imported.sales++;
         else if (!r.ok) errors.push(`sale id=${row.id}: ${r.error}`);

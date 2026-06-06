@@ -39,6 +39,17 @@ function lastOfMonth() {
   return last.toISOString().slice(0, 10);
 }
 
+function toLocalSqlDateTime(dateStr) {
+  if (!dateStr) return null;
+  if (typeof dateStr === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(dateStr)) {
+    return dateStr;
+  }
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const pad2 = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
 function formatDateDisplay(iso) {
   if (!iso) return '—';
   const [y, m, dd] = iso.split('-');
@@ -769,7 +780,7 @@ export async function renderReports(container) {
             row.qty           ?? 0,
             row.purchase_rate ?? 0,
             row.supplier_name ?? '',
-            row.purchase_date ?? new Date().toISOString(),
+            row.purchase_date ? toLocalSqlDateTime(row.purchase_date) : toLocalSqlDateTime(new Date()),
           ]
         );
         if (r.ok && r.changes > 0) imported.purchases++;
@@ -786,7 +797,7 @@ export async function renderReports(container) {
           [
             row.id              ?? null,
             row.invoice_number  ?? '',
-            row.sale_date       ?? new Date().toISOString(),
+            row.sale_date ? toLocalSqlDateTime(row.sale_date) : toLocalSqlDateTime(new Date()),
             row.customer_name   ?? 'Walk-in Customer',
             row.customer_gstin  ?? '',
             row.total_taxable   ?? 0,

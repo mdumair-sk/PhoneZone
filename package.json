@@ -56,8 +56,7 @@
       "dist/**/*",
       "main.js",
       "preload.js",
-      "assets/**/*",
-      "node_modules/**/*"
+      "assets/**/*"
     ],
     "extraResources": [],
     "win": {
@@ -65,12 +64,6 @@
       "target": [
         {
           "target": "nsis",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "msi",
           "arch": [
             "x64"
           ]
@@ -84,11 +77,6 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "license": "build/license.txt"
-    },
-    "msi": {
-      "perMachine": false,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
     }
   }
 }

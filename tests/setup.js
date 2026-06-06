@@ -343,6 +343,7 @@ const mockDbRun = vi.fn().mockImplementation(async (sql, params = []) => {
       payment_mode: params[8],
       status: 'Active',
       invoice_type: params[9],
+      sale_date: params[10] ?? new Date().toISOString(),
     };
     _tables.get('sales').push(sale);
     return { ok: true, changes: 1, lastInsertRowid: _autoIncrement };

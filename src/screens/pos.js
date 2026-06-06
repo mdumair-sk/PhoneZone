@@ -22,6 +22,11 @@ function fmt(n, d = 2) {
 
 function round2(n) { return Math.round((n + Number.EPSILON) * 100) / 100; }
 
+function toLocalSqlDateTime(d = new Date()) {
+  const pad2 = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+
 // Debounce helper
 function debounce(fn, ms) {
   let t;
@@ -100,8 +105,7 @@ function calcCartTotals(cart) {
 
 // ── Invoice Number Generator ──────────────────────────────────────────────────
 
-async function generateInvoiceNumber() {
-  const now  = new Date();
+async function generateInvoiceNumber(now = new Date()) {
   const pad2 = n => String(n).padStart(2, '0');
   const dateStr = `${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}`;
   const timeStr = `${pad2(now.getHours())}${pad2(now.getMinutes())}${pad2(now.getSeconds())}`;
@@ -813,10 +817,13 @@ async function handleSavePrint(container, settings) {
     }
   }
 
+  const now = new Date();
+  const localSaleDate = toLocalSqlDateTime(now);
+
   // 2. Generate invoice number
   let invoiceNumber;
   try {
-    invoiceNumber = await generateInvoiceNumber();
+    invoiceNumber = await generateInvoiceNumber(now);
   } catch (e) {
     errEl.textContent = 'Failed to generate invoice number.';
     return;
@@ -844,8 +851,8 @@ async function handleSavePrint(container, settings) {
     const saleRes = await window.api.db.run(`
       INSERT INTO sales
         (invoice_number, customer_name, customer_gstin,
-         total_taxable, total_cgst, total_sgst, grand_total, amount_paid, payment_mode, status, invoice_type)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)`,
+         total_taxable, total_cgst, total_sgst, grand_total, amount_paid, payment_mode, status, invoice_type, sale_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)`,
       [
         invoiceNumber,
         pos.customerName || 'Walk-in Customer',
@@ -856,7 +863,8 @@ async function handleSavePrint(container, settings) {
         totals.grand_total,
         finalAmountPaid,
         pos.paymentMode,
-        invoiceType
+        invoiceType,
+        localSaleDate
       ]
     );
 

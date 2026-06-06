@@ -1055,6 +1055,44 @@ function showLockScreen(storedHash) {
     } catch (e) {
       // Ignored if column already exists
     }
+
+    // Migration: Convert sales.sale_date, purchases.purchase_date, and expenses.expense_date from UTC to local time (one-time)
+    try {
+      const migDone = await window.api.db.query(`SELECT value FROM settings WHERE key = 'timezone_migration_done'`);
+      if (!migDone.ok || !migDone.rows.length || migDone.rows[0].value !== 'true') {
+        // Convert existing sale_date timestamps to local time format
+        await window.api.db.run(`
+          UPDATE sales
+          SET sale_date = datetime(sale_date, 'localtime')
+          WHERE sale_date IS NOT NULL 
+            AND (sale_date LIKE '____-__-__ __:__:__' OR sale_date LIKE '____-__-__T__:__:__Z' OR sale_date LIKE '____-__-__T__:__:__.%Z')
+        `);
+
+        // Convert existing purchase_date timestamps to local time format
+        await window.api.db.run(`
+          UPDATE purchases
+          SET purchase_date = datetime(purchase_date, 'localtime')
+          WHERE purchase_date IS NOT NULL
+            AND (purchase_date LIKE '____-__-__ __:__:__' OR purchase_date LIKE '____-__-__T__:__:__Z' OR purchase_date LIKE '____-__-__T__:__:__.%Z')
+        `);
+
+        // Convert existing expense_date timestamps to local time format
+        await window.api.db.run(`
+          UPDATE expenses
+          SET expense_date = datetime(expense_date, 'localtime')
+          WHERE expense_date IS NOT NULL
+            AND (expense_date LIKE '____-__-__ __:__:__' OR expense_date LIKE '____-__-__T__:__:__Z' OR expense_date LIKE '____-__-__T__:__:__.%Z')
+        `);
+
+        // Record that migration is complete
+        await window.api.db.run(`
+          INSERT INTO settings (key, value) VALUES ('timezone_migration_done', 'true')
+          ON CONFLICT(key) DO UPDATE SET value = 'true'
+        `);
+      }
+    } catch (migErr) {
+      console.error('[Phone Zone] Timezone migration error:', migErr);
+    }
   } catch (e) {
     console.error('[Phone Zone] Schema init error:', e);
   }
